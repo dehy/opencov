@@ -1,19 +1,25 @@
-version: '2'
+version: "3"
 
 services:
   postgres:
-    image: postgres:9.5
+    image: postgres:11-alpine
     volumes:
       - ./postgresql-data:/var/lib/postgresql/data/pgdata
     environment:
+      POSTGRES_USER: opencov
+      POSTGRES_PASSWORD: opencov
+      POSTGRES_DB: opencov_local
       PGDATA: /var/lib/postgresql/data/pgdata
 
+  adminer:
+    image: dehy/adminer
+    ports:
+      - "4001:80"
+      
   opencov:
-    image: tuvistavie/opencov
+    build: .
     ports:
       - "4000:4000"
     volumes:
       - ./config/local.sample.exs:/opencov/config/local.exs
     command: mix phoenix.server
-    links:
-      - postgres
